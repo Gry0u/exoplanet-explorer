@@ -64,8 +64,11 @@ Hint: you'll probably still need to use .map.
 
       addSearchHeader(response.query);
 
-      response.results.map(function(url) {
-        getJSON(url).then(createPlanetThumb);
+      return Promise.all(response.results.map(getJSON)) //run in parallel
+      .then(function(planets) {//planets is an array of json in the same order of the promises passed to .all
+        planets.forEach(function(planet) {
+          createPlanetThumb(planet);
+        });
       });
     });
   });
